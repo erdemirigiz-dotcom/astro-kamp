@@ -53,13 +53,21 @@
     video.addEventListener('playing', function () { video.classList.add('oynuyor'); });
     video.addEventListener('error', function () { /* poster zaten görünür, sessizce vazgeç */ }, true);
 
-    var kaynak = document.createElement('source');
-    kaynak.src = 'video/hero-gece.webm';
-    kaynak.type = 'video/webm';
-    video.appendChild(kaynak);
-    video.load();
-    var soz = video.play();
-    if (soz && soz.catch) soz.catch(function () { /* otoynatma engellendi, poster kalır */ });
+    // Video indirmesi (2+ MB) kritik yola SOKULMUYOR — sayfa tamamen yüklenip
+    // "load" olayı ateşlenene kadar bekliyor. Poster zaten anında görünür
+    // olduğu için kullanıcı hiçbir şey kaybetmiyor, sadece ilk ağ yükünü
+    // (CSS/JS/görsel) videoyla yarıştırmıyoruz.
+    function baslat() {
+      var kaynak = document.createElement('source');
+      kaynak.src = 'video/hero-gece.webm';
+      kaynak.type = 'video/webm';
+      video.appendChild(kaynak);
+      video.load();
+      var soz = video.play();
+      if (soz && soz.catch) soz.catch(function () { /* otoynatma engellendi, poster kalır */ });
+    }
+    if (document.readyState === 'complete') baslat();
+    else window.addEventListener('load', baslat);
   })();
 
   /* ─── GECE ÇİZELGESİ (imza) ──────────────────────────────────────────── */
