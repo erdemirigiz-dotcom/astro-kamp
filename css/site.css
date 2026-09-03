@@ -81,7 +81,7 @@ h1, h2, h3 {
 h1 { font-size: clamp(2.7rem, 8.5vw, 6rem); line-height: .94; }
 /* Hero başlığı, ilham turu çıkarımı 3: gökyüzü fotoğrafıyla iç içe geçen dev
    tipografi. Kelime kelime bölünür (bilesenler/bolunmus-baslik). */
-.hero-baslik { font-size: clamp(3rem, 11.5vw, 8.6rem); line-height: .88; }
+.hero-baslik { font-size: clamp(2.6rem, 7.6vw, 6.2rem); line-height: .9; }
 .kelime { display: inline-block; overflow: hidden; vertical-align: bottom; }
 .kelime > span { display: inline-block; will-change: transform; }
 h2 { font-size: clamp(1.75rem, 4.4vw, 3.1rem); line-height: 1.04; }
@@ -263,19 +263,20 @@ button.dugme { font: inherit; font-family: var(--veri); font-size: .74rem;
 }
 .serit-sy {
   position: absolute; top: 0; bottom: 0;
-  border-top: 2px solid var(--soguk);
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--soguk) 26%, transparent), transparent 62%);
+  border-top: 3px solid var(--soguk);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--soguk) 40%, transparent), transparent 70%);
 }
 .serit-isaret { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--cizgi-kuv); }
 .serit-isaret[data-vurgu="1"] { background: var(--kav-acik); width: 2px; }
 .serit-yazi {
-  position: absolute; bottom: .5rem; transform: translateX(-50%);
+  position: absolute; bottom: .45rem; transform: translateX(-50%);
   font-family: var(--veri); font-size: .64rem; letter-spacing: .06em;
   color: var(--tuz); white-space: nowrap;
   text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
   font-variant-numeric: tabular-nums;
 }
 [data-tema="gunduz"] .serit-yazi { text-shadow: 0 1px 3px rgba(255, 255, 255, .9); }
+.serit-yazi--ust { top: .45rem; bottom: auto; }
 .serit-eksen {
   display: flex; justify-content: space-between;
   margin-top: .5rem; font-size: .64rem;
@@ -463,7 +464,6 @@ input[aria-invalid="true"] { border-color: var(--kav); }
  * .gsap-on gövdeye YALNIZCA GSAP gerçekten yüklendiğinde eklenir; script
  * yüklenmezse hiçbir şey gizli kalmaz (anayasa: no-gsap = her şey görünür). */
 .gsap-on .giris-satir { opacity: 0; }
-.gsap-on .kelime > span { transform: translateY(105%); }
 .gsap-on .acilan img {
   clip-path: inset(0 0 100% 0);
   transition: clip-path 1.05s cubic-bezier(.22, .8, .28, 1);
@@ -472,6 +472,5 @@ input[aria-invalid="true"] { border-color: var(--kav); }
 
 @media (prefers-reduced-motion: reduce) {
   .gsap-on .giris-satir, .gsap-on .acilan img { opacity: 1 !important; clip-path: none !important; }
-  .gsap-on .kelime > span { transform: none !important; }
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }

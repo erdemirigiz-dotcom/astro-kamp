@@ -122,7 +122,7 @@
       c.style.left = yuzde(o);
       serit.appendChild(c);
       var y = document.createElement('span');
-      y.className = 'serit-yazi';
+      y.className = 'serit-yazi' + (x[2] ? ' serit-yazi--ust' : '');
       y.textContent = G.saatMetni(x[0]) + ' ' + x[1];
       y.style.left = yuzde(Math.min(0.9, Math.max(0.08, o)));
       serit.appendChild(y);
@@ -429,7 +429,6 @@
     // başlık olduğu gibi, tek parça ve tam görünür kalır.
     document.querySelectorAll('[data-bolunmus]').forEach(function (b) {
       var parcalar = [];
-      b.childNodes.forEach ? null : null;
       Array.prototype.slice.call(b.childNodes).forEach(function (d) {
         if (d.nodeType === 3) {
           d.textContent.split(/(\s+)/).forEach(function (w) {
@@ -447,10 +446,12 @@
       parcalar.forEach(function (p) { b.appendChild(p); });
     });
 
+    // from() kullanılıyor: başlangıç durumunu GSAP'in kendisi koyar. Tween hiç
+    // koşmazsa kelimeler doğal yerinde kalır — CSS ile gizleyip JS'e bel bağlamak
+    // 03.09'da başlığın tamamen boş kalmasına yol açmıştı.
     gs.set('.giris-satir', { opacity: 0, y: 22 });
-    gs.set('.kelime > span', { yPercent: 105 });
     gs.timeline({ defaults: { ease: 'power3.out' } })
-      .to('.kelime > span', { yPercent: 0, duration: .95, stagger: .07, delay: .1 })
+      .from('.kelime > span', { yPercent: 105, duration: .95, stagger: .07, delay: .1 })
       .to('.giris-satir', { opacity: 1, y: 0, duration: .8, stagger: .13 }, '-=0.55');
 
     // bilesenler/acilma-gorseli — ScrollTrigger (42 KB) yerine
