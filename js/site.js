@@ -1,6 +1,7 @@
 /* site.js — KERVANKIRAN arayüzü
- * Bölümler: tema · gece çizelgesi (imza) · gök olayları · Bortle şeridi ·
- *           rezervasyon formu · harita · giriş animasyonu
+ * Bölümler: tema · hero videosu · gece çizelgesi (imza) · gök olayları ·
+ *           Bortle şeridi · rezervasyon formu · harita · giriş animasyonu ·
+ *           scroll hareketleri (03.09 gösteri turu)
  * Kural: JS düşerse sayfa okunur kalır — hiçbir içerik JS'e bağlı değildir,
  * yalnız çizelge/şerit gibi hesaplanan bölümler boş kalır ve yerlerine not düşer.
  */
@@ -35,6 +36,31 @@
     temaUygula(yeni);
     try { localStorage.setItem('kk-tema', yeni); } catch (e) { /* depolama kapalı */ }
   });
+
+  /* ─── HERO VİDEOSU ────────────────────────────────────────────────────
+   * <video> HTML'de KAYNAKSIZ duruyor — hiç istek gitmiyor. Koşullar uygunsa
+   * (hareket kısıtlı değil, geniş ekran, veri tasarrufu kapalı) burada bir
+   * <source> eklenip yükleniyor. Herhangi bir sebeple başarısız olursa poster
+   * zaten görünür durumda kalıyor, konsola hata düşmüyor (error olayı yakalanıp
+   * yutuluyor — bu bilinçli, kullanıcıya gösterilecek bir hata değil). */
+  (function heroVideo() {
+    var video = $('#hero-video');
+    if (!video) return;
+    var darEkran = window.matchMedia('(max-width: 640px)').matches;
+    var veriTasarrufu = !!(navigator.connection && navigator.connection.saveData);
+    if (azHareket || darEkran || veriTasarrufu || noanim) return; // poster tek başına kalır
+
+    video.addEventListener('playing', function () { video.classList.add('oynuyor'); });
+    video.addEventListener('error', function () { /* poster zaten görünür, sessizce vazgeç */ }, true);
+
+    var kaynak = document.createElement('source');
+    kaynak.src = 'video/hero-gece.webm';
+    kaynak.type = 'video/webm';
+    video.appendChild(kaynak);
+    video.load();
+    var soz = video.play();
+    if (soz && soz.catch) soz.catch(function () { /* otoynatma engellendi, poster kalır */ });
+  })();
 
   /* ─── GECE ÇİZELGESİ (imza) ──────────────────────────────────────────── */
   var AYLAR = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
@@ -454,20 +480,69 @@
       .from('.kelime > span', { yPercent: 105, duration: .95, stagger: .07, delay: .1 })
       .to('.giris-satir', { opacity: 1, y: 0, duration: .8, stagger: .13 }, '-=0.55');
 
-    // bilesenler/acilma-gorseli — ScrollTrigger (42 KB) yerine
-    // IntersectionObserver: aynı clip-path açılması, sıfır ek yük.
-    // Gözlemci yoksa CSS geçişi hiç tetiklenmez ve görsel .acildi olmadan da
-    // görünür kalsın diye sınıf hemen eklenir.
-    var acilanlar = document.querySelectorAll('.acilan');
-    if (acilanlar.length && 'IntersectionObserver' in window) {
-      var goz = new IntersectionObserver(function (girisler) {
-        girisler.forEach(function (g) {
-          if (g.isIntersecting) { g.target.classList.add('acildi'); goz.unobserve(g.target); }
+    // 03.09 GÖSTERİ TURU — dört hareket, hepsi ScrollTrigger ile. Tümü
+    // transform/opacity (bilinçli istisna: acilan görselinde clip-path) ve
+    // tümü gsap.from()/fromTo() — GSAP hiç koşmazsa (?noanim, hata,
+    // reduced-motion) CSS'te bunlara karşılık gelen hiçbir gizleme kuralı
+    // yok, sayfa olduğu gibi tam görünür kalır (rapor.md 4/1 dersi).
+    if (window.ScrollTrigger) {
+      gs.registerPlugin(window.ScrollTrigger);
+
+      // 1) HERO PARALAKSI — görsel/video katmanı yavaş, başlık içeriği daha
+      // hızlı kayar; hero alta doğru hafifçe solarak sonraki bölüme geçer.
+      var heroEl = $('.hero');
+      if (heroEl) {
+        gs.to('.hero-gorsel', {
+          yPercent: 16, ease: 'none',
+          scrollTrigger: { trigger: heroEl, start: 'top top', end: 'bottom top', scrub: true }
         });
-      }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
-      acilanlar.forEach(function (el) { goz.observe(el); });
+        gs.to('.hero-icerik', {
+          yPercent: -10, opacity: .25, ease: 'none',
+          scrollTrigger: { trigger: heroEl, start: 'top top', end: 'bottom top', scrub: true }
+        });
+      }
+
+      // 2) GECE ÇİZELGESİ ŞERİDİ — imza öğe scroll'a girince soldan sağa
+      // "gece ilerliyor" gibi açılıyor (scaleX); tarih çipleri arkasından
+      // sıralı beliriyor. Veri/hesap değişmiyor, yalnız açılış hareketleniyor.
+      var seritSarmalEl = $('.serit-sarmal');
+      if (seritSarmalEl) {
+        gs.from(seritSarmalEl, {
+          scaleX: 0, transformOrigin: 'left center', duration: 1.3, ease: 'power2.out',
+          scrollTrigger: { trigger: '#cizelge', start: 'top 70%' }
+        });
+      }
+      if (document.querySelector('.tarih-chip')) {
+        gs.from('.tarih-chip', {
+          opacity: 0, y: 14, duration: .55, stagger: .045, ease: 'power2.out',
+          scrollTrigger: { trigger: '#tarih-serit', start: 'top 85%' }
+        });
+      }
+
+      // 3) BUNGALOV KARTLARI — kaydırmada stagger ile yükselip beliriyor.
+      if (document.querySelector('.kart')) {
+        gs.from('.kart', {
+          opacity: 0, y: 36, duration: .75, stagger: .14, ease: 'power2.out',
+          scrollTrigger: { trigger: '.kartlar', start: 'top 82%' }
+        });
+      }
+
+      // 4) YILDIZ İZİ (acilma-gorseli) — clip-path açılışı artık scroll
+      // pozisyonuna DOĞRUDAN bağlı (scrub); üstüne "dönme izi" hissini
+      // güçlendiren hafif bir ölçek/kayma eklendi. clip-path burada bilinçli
+      // bir istisna (bilesenler/acilma-gorseli KULLANIM.md, aynı gerekçe).
+      document.querySelectorAll('.acilan img').forEach(function (img) {
+        gs.fromTo(img,
+          { clipPath: 'inset(0 0 100% 0)', scale: 1.08, y: -16 },
+          {
+            clipPath: 'inset(0 0 0% 0)', scale: 1, y: 0, ease: 'none',
+            scrollTrigger: { trigger: img, start: 'top 88%', end: 'top 35%', scrub: .6 }
+          });
+      });
     } else {
-      acilanlar.forEach(function (el) { el.classList.add('acildi'); });
+      // ScrollTrigger yüklenmediyse acilma-gorseli en azından görünür kalsın —
+      // clip-path hiçbir yerde CSS'ten gelmiyor, ekstra bir şey yapmaya gerek yok,
+      // <img> zaten doğal hâliyle tam görünür.
     }
   }
 })();
