@@ -19,3 +19,11 @@ TOPLAM: 384.6 KB
 - `teleskop.webp` — "Gece gökyüzüne dönük teleskop silueti, arkada yıldız dolu Samanyolu"
 - `bozkir-gunduz.webp` — "Gündüz açık mavi gökyüzü altında uçsuz bucaksız kurak bozkır düzlüğü"
 - `yildiz-izi.webp` — "Karanlık ufuk çizgisi üzerinde uzun pozlamayla çekilmiş dairesel yıldız izleri"
+
+## 03.09 EKLEME — Kervan kartı
+Sebep: kartta "taş yapı" anlatılıyordu ama fotoğrafta yapı yoktu (boş bozkır);
+alt metni de var olmayan taş yapılardan söz ediyordu. Şef denetiminde yakalandı.
+- `tas-yapi.webp` · Pexels #11022607 · https://www.pexels.com/photo/11022607/ ·
+  fotoğrafçı: Mathias Reding · 880×587 (dikey orijinal 3:2'ye kırpıldı) · 33,0 KB ·
+  Pexels License (https://www.pexels.com/license/)
+- `bozkir-gunduz.webp` artık sayfada KULLANILMIYOR (silinmedi, depoda duruyor).
