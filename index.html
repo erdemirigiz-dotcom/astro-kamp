@@ -76,8 +76,10 @@
         <img src="gorseller/hero-samanyolu-v2.webp" alt="Karapınar ovasının çıplak ufku üzerinde uçtan uca uzanan Samanyolu kavsi" width="1400" height="788" fetchpriority="high" decoding="async">
       </picture>
       <!-- Video JS ile eklenir (site.js, heroVideo): kısıtlı ekran/veri tasarrufu/reduced-motion'da
-           hiç istek gitmez, poster tek başına kalır. -->
-      <video class="hero-video" id="hero-video" muted loop playsinline preload="none" poster="gorseller/hero-samanyolu-v2.webp" aria-hidden="true" tabindex="-1"></video>
+           hiç istek gitmez, poster tek başına kalır. `poster` özniteliği KASTEN yok: video zaten
+           oynamaya başlayana kadar opacity:0 (altındaki <picture> tam görünür poster'ın kendisi) —
+           ayrı bir poster fetch'i sadece tekrar aynı (ya da mobilde YANLIŞ) görseli indirtirdi. -->
+      <video class="hero-video" id="hero-video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
     </div>
     <div class="hero-icerik">
       <p class="veri hero-veri"><span>Karapınar · Konya</span><span>1004 m</span><span>Bortle 2</span></p>
